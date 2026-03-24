@@ -1,0 +1,32 @@
+[
+  {
+    "item_name": "plastic water bottle",
+    "material": "Polyethylene Terephthalate (PET)",
+    "recyclability_score": 92,
+    "esg_impact": "High circularity potential is often offset by low collection rates and the risk of marine plastic pollution."
+  },
+  {
+    "item_name": "aluminum soda can",
+    "material": "Aluminum",
+    "recyclability_score": 98,
+    "esg_impact": "Infinite recyclability reduces the need for carbon-intensive bauxite mining and supports a low-carbon circular economy."
+  },
+  {
+    "item_name": "paperboard cereal box",
+    "material": "Cellulose Fiber (Paperboard)",
+    "recyclability_score": 82,
+    "esg_impact": "While biodegradable and renewable, its impact depends on sustainable forestry certifications like FSC and effective fiber recovery systems."
+  },
+  {
+    "item_name": "glass jam jar",
+    "material": "Soda-lime Glass",
+    "recyclability_score": 88,
+    "esg_impact": "Chemically inert and infinitely recyclable, glass reduces toxicity risks but demands high energy for melting and heavy transportation logistics."
+  },
+  {
+    "item_name": "styrofoam food container",
+    "material": "Expanded Polystyrene (EPS)",
+    "recyclability_score": 12,
+    "esg_impact": "Extremely low recovery rates and environmental persistence lead to significant ecological harm and high social costs for cleanup."
+  }
+]
