@@ -5,7 +5,7 @@ Built for GDGoC Hackathon Vietnam 2026
 """
 
 from crewai import Task
-from agents import scout_agent
+from agents import scout_agent, financial_agent
 
 
 # ============================================================================
@@ -69,6 +69,67 @@ def create_scout_task(trash_list: str | list = None) -> Task:
 
 
 # ============================================================================
+# FINANCIAL ANALYSIS TASK
+# ============================================================================
+
+def create_finance_task(scout_output: str | list = None, context: str = "scout_task") -> Task:
+    """
+    Create a finance task for calculating monetary rewards from recycled materials.
+    
+    This task analyzes the output from scout_task and calculates:
+    - Total monetary reward based on material types and quantities
+    - Financial advice on recycling initiatives
+    
+    Financial rates:
+    - Plastic: $0.05/unit
+    - Aluminum: $0.15/unit
+    - Paper: $0.02/unit
+    
+    Args:
+        scout_output: Output from scout_task (JSON string or list) containing material analysis.
+                     Can be a string representation or actual data.
+        context: Context information about how to process the scout_task output.
+    
+    Returns:
+        Configured Task instance linked to financial_agent
+    """
+    if isinstance(scout_output, list):
+        scout_output_str = str(scout_output)
+    elif scout_output is None:
+        scout_output_str = "[scout_task output will be provided here]"
+    else:
+        scout_output_str = str(scout_output)
+    
+    return Task(
+        description=(
+            f"Based on the following scout analysis output:\n{scout_output_str}\n\n"
+            "Calculate the total monetary reward for recycled materials using these rates:\n"
+            "- Plastic: $0.05 per unit\n"
+            "- Aluminum: $0.15 per unit\n"
+            "- Paper: $0.02 per unit\n\n"
+            "For EACH item from the scout analysis:\n"
+            "1. Identify the material type (extract from 'material' field)\n"
+            "2. Assign a unit count based on recyclability_score if item name suggests quantity, or default to 1 unit\n"
+            "3. Apply the corresponding rate to calculate reward for that item\n"
+            "4. Sum all rewards to get total monetary reward\n\n"
+            "Provide financial advice (1-2 sentences) on the monetary reward and recycling value.\n\n"
+            "CRITICAL: Return output as valid JSON ONLY. No other text.\n"
+            "Ensure JSON is properly formatted and can be parsed by Python's json module."
+        ),
+        expected_output=(
+            "A valid JSON object with this exact structure:\n"
+            "{\n"
+            "  \"total_reward\": number (in USD),\n"
+            "  \"Financial Advice\": \"string (1-2 sentences about financial reward and recycling value)\"\n"
+            "}\n\n"
+            "IMPORTANT: Return ONLY valid JSON. No markdown, no explanations, no code blocks."
+        ),
+        agent=financial_agent,
+        output_file="finance_analysis_output.json"
+    )
+
+
+# ============================================================================
 # TASK FACTORY
 # ============================================================================
 
@@ -89,9 +150,22 @@ class TaskFactory:
         return create_scout_task(trash_list)
     
     @staticmethod
+    def get_finance_task(scout_output: str | list = None) -> Task:
+        """
+        Get a new finance task instance.
+        
+        Args:
+            scout_output: Output from scout_task to analyze
+        
+        Returns:
+            Configured finance Task
+        """
+        return create_finance_task(scout_output)
+    
+    @staticmethod
     def list_tasks() -> list[str]:
         """Get list of available task types."""
-        return ["scout"]
+        return ["scout", "finance"]
 
 
 # ============================================================================

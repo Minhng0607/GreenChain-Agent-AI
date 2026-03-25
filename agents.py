@@ -219,6 +219,51 @@ def create_compliance_agent(llm: Optional[ChatGoogleGenerativeAI] = None) -> Age
     )
 
 
+def create_financial_agent(llm: Optional[ChatGoogleGenerativeAI] = None) -> Agent:
+    """
+    Create a Green Finance Specialist Agent.
+    
+    Role: Analyze and calculate financial rewards for recycled materials
+    
+    Responsibilities:
+    - Calculate monetary rewards for recycled materials based on market rates
+    - Assess carbon credits and green finance opportunities
+    - Provide financial advice on recycling initiatives
+    - Analyze market prices for recyclable materials
+    
+    Args:
+        llm: The language model instance
+    
+    Returns:
+        Configured Agent instance for financial analysis
+    """
+    model_ref = "google/gemini-3-flash-preview"
+    if llm is None:
+        try:
+            _ = initialize_llm(model_name="gemini-3-flash-preview")
+            model_ref = "google/gemini-3-flash-preview"
+        except Exception:
+            model_ref = "google/gemini-1.5-flash"
+
+    return Agent(
+        role="Green Finance Specialist",
+        goal="Calculate monetary rewards for recycled materials and provide financial advice on green initiatives",
+        backstory=(
+            "You are an expert in carbon credits and recycling market prices with credentials "
+            "equivalent to HUST's Environmental Economics standards. You have deep knowledge of "
+            "global commodity markets for recycled materials, carbon credit valuations, and "
+            "financial incentives for sustainable practices. You excel at calculating precise "
+            "financial rewards, analyzing market trends, and providing strategic financial advice "
+            "for circular economy initiatives."
+        ),
+        llm=model_ref,
+        verbose=False,
+        allow_delegation=False,
+        max_iter=10,
+        memory=True
+    )
+
+
 # ============================================================================
 # AGENT FACTORY
 # ============================================================================
@@ -243,7 +288,7 @@ class AgentFactory:
         Get or create an agent of the specified type.
         
         Args:
-            agent_type: Type of agent ('scout', 'analyzer', 'compliance')
+            agent_type: Type of agent ('scout', 'analyzer', 'compliance', 'financial')
         
         Returns:
             Agent instance
@@ -260,6 +305,8 @@ class AgentFactory:
             agent = create_analyzer_agent(self.llm)
         elif agent_type == "compliance":
             agent = create_compliance_agent(self.llm)
+        elif agent_type == "financial":
+            agent = create_financial_agent(self.llm)
         else:
             raise ValueError(f"Unknown agent type: {agent_type}")
         
@@ -268,7 +315,7 @@ class AgentFactory:
     
     def list_agents(self) -> list[str]:
         """Get list of available agent types."""
-        return ["scout", "analyzer", "compliance"]
+        return ["scout", "analyzer", "compliance", "financial"]
 
 
 # ============================================================================
@@ -287,11 +334,12 @@ try:
     _default_factory = AgentFactory(_default_llm)
     print("[agents.py] AgentFactory created")
 
-    # Export scout agent for direct import
+    # Export agents for direct import
     scout_agent = _default_factory.get_agent("scout")
     analyzer_agent = _default_factory.get_agent("analyzer")
     compliance_agent = _default_factory.get_agent("compliance")
-    print("Agent initialized successfully")
+    financial_agent = _default_factory.get_agent("financial")
+    print("All agents initialized successfully")
 
 except Exception as e:
     print(f"[agents.py] Initialization failed: {e}")
@@ -299,6 +347,7 @@ except Exception as e:
     scout_agent = None
     analyzer_agent = None
     compliance_agent = None
+    financial_agent = None
 
 
 __all__ = [
@@ -308,9 +357,10 @@ __all__ = [
     "create_scout_agent",
     "create_analyzer_agent",
     "create_compliance_agent",
+    "create_financial_agent",
     "scout_agent",
     "analyzer_agent",
     "compliance_agent",
+    "financial_agent",
 ]
-
  
